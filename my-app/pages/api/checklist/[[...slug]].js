@@ -1,14 +1,28 @@
-import CheckList from '../../models/checkList';
-import connectDB from '../../middleware/db';
+import CheckList from '../../../models/checkList';
+import connectDB from '../../../middleware/db';
 
 const handler = async (req, res) => {
 	// Get the entire checklist or a single value
 	if (req.method === 'GET') {
 		try {
-			const models = await CheckList.find();
-			res.status(200).json(models);
+			// Check if was an ID in the request
+			if (req.query.slug) {
+				if (req.query.slug.length > 1)
+					throw new Error('An error in the url was found');
+				const checklistId = req.query.slug[0];
+				const checklist = await CheckList.findById(checklistId);
+
+				// check if there is no checlist with the id
+				if (!checklist)
+					throw new Error('There is no checklist with that id');
+				// If the checklist was found
+				res.status(200).json(checklist);
+			} else {
+				const models = await CheckList.find();
+				res.status(200).json(models);
+			}
 		} catch (error) {
-			res.status(422).send('Error');
+			res.status(422).send(error.message);
 		}
 	}
 	// Create a check list
@@ -26,17 +40,16 @@ const handler = async (req, res) => {
 		} catch (error) {
 			res.status(422).send(error.message);
 		}
-	}
-	else if(req.method === 'PUT'){
+	} else if (req.method === 'PUT') {
 		try {
 			// If the url is shorter or larger than the expected, thown an error
-			if (!req.query.checklist[1] || req.query.checklist.length > 2 || !req.body)
+			if ((req.query.length > 2 && !req.query.length > 0) || !req.body)
 				throw new Error('An error in the url was found');
-			const id = req.query.checklist[1];
+			const id = req.query.slug[0];
 			const checklist = await CheckList.findById(id);
 
-			if(!checklist)
-				throw new Error('The checklist with that id dosent exist')
+			if (!checklist)
+				throw new Error('The checklist with that id dosent exist');
 
 			// Check if the checklist have the types corrected
 			checklist.name = req.body.name;
@@ -54,13 +67,13 @@ const handler = async (req, res) => {
 	else if (req.method === 'DELETE') {
 		try {
 			// If the url is shorter or larger than the expected, thown an error
-			if (!req.query.checklist[1] || req.query.checklist.length > 2)
+			if (!req.query.length > 0 && req.query.length > 2)
 				throw new Error('An error in the url was found');
-			const id = req.query.checklist[1];
+			const id = req.query.slug[0];
 			const checklist = await CheckList.findById(id);
 
-			if(!checklist)
-				throw new Error('The checklist with that id dosent exist')
+			if (!checklist)
+				throw new Error('The checklist with that id dosent exist');
 
 			await checklist.remove();
 			res.status(200).json('Checklist deleted');

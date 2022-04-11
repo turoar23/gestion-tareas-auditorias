@@ -7,18 +7,39 @@ import EyeIcon from '../../components/UI/EyeIcon';
 import IconButton from '../../components/UI/IconButton';
 import DeleteIcon from '../../components/UI/DeleteIcon';
 
-const Audit = ({audits}) => {
-    const [listAudits, setListAudits] = useState(audits);
+// TODO: Repasar el buton y el uso del tag a
+function Audits({ checklists }) {
+	const [checkLists, setCheckLists] = useState(checklists);
 	const router = useRouter();
 
-    return (
+	const handleRemove = async checklistId => {
+		const request = await fetch(
+			'http://localhost:3000/api/checklist/' + checklistId,
+			{
+				method: 'DELETE',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			}
+		);
+		if (request.ok) {
+			const newCheckLists = checkLists.filter(
+				item => item._id !== checklistId
+			);
+			setCheckLists(newCheckLists);
+		} else {
+			alert('Se ha producido un error');
+		}
+	};
+
+	return (
 		<div>
-			<h1>Auditorias</h1>
+			<h1>Check-list creados</h1>
 			<Button bordered color='primary' auto>
-				<Link href='/audit/create'>Nueva</Link>
+				<Link href='/checklist/create'>Nuevo</Link>
 			</Button>
 			<Table
-				aria-label='Audits table'
+				aria-label='Check-List table'
 				css={{
 					height: 'auto',
 					minWidth: '100%',
@@ -26,26 +47,26 @@ const Audit = ({audits}) => {
 				selectionMode='single'
 			>
 				<Table.Header>
-					<Table.Column>Fecha</Table.Column>
 					<Table.Column>Nombre</Table.Column>
-					<Table.Column>Auditor</Table.Column>
+					<Table.Column>Categoria</Table.Column>
+					<Table.Column>Descripción</Table.Column>
 					<Table.Column>Actions</Table.Column>
 				</Table.Header>
 				<Table.Body>
-					{listAudits && listAudits.map(item => (
+					{checkLists.map(item => (
 						<Table.Row key={item._id}>
-							<Table.Cell>{item.updated_at}</Table.Cell>
-							<Table.Cell>{item.checklist.name}</Table.Cell>
-							<Table.Cell>{item.auditor}</Table.Cell>
+							<Table.Cell>{item.name}</Table.Cell>
+							<Table.Cell>{item.category}</Table.Cell>
+							<Table.Cell>{item.description}</Table.Cell>
 							<Table.Cell>
 								<Row justify='center' align='center'>
 									<Col css={{ d: 'flex' }}>
 										<Tooltip content='Detalles'>
 											<IconButton
 												onClick={() => {
-													// router.push(
-													// 	'/checklist/' + item._id
-													// );
+													router.push(
+														'/checklist/' + item._id
+													);
 												}}
 											>
 												<EyeIcon
@@ -58,9 +79,9 @@ const Audit = ({audits}) => {
 									<Col css={{ d: 'flex' }}>
 										<Tooltip content='Eliminar'>
 											<IconButton
-												// onClick={() => {
-												// 	handleRemove(item._id);
-												// }}
+												onClick={() => {
+													handleRemove(item._id);
+												}}
 											>
 												<DeleteIcon
 													size={20}
@@ -80,14 +101,14 @@ const Audit = ({audits}) => {
 }
 
 export async function getStaticProps() {
-	const res = await fetch('http://localhost:3000/api/audit');
-	const audits = await res.json();
+	const res = await fetch('http://localhost:3000/api/checklist');
+	const checklists = await res.json();
 
 	return {
 		props: {
-			audits,
+			checklists,
 		},
 	};
 }
 
-export default Audit;
+export default Audits;

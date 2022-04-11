@@ -6,7 +6,8 @@ const Navbar = () => {
     return (
         <nav className={classes.nav}>
             <Link href='/'>Inicio</Link>
-            <Link href='/audit'>Check-list</Link>
+            <Link href='/checklist'>Check-list</Link>
+            <Link href='/audit'>Auditorias</Link>
         </nav>
     )
 }

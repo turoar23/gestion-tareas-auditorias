@@ -2,16 +2,14 @@ import mongoose from 'mongoose';
 var Schema = mongoose.Schema;
 
 const audit = new Schema({
-	name: {
-		type: String,
-		required: true,
+	checklist: {
+		type: Schema.Types.ObjectId,
+		ref: 'CheckList',
+		required: true
 	},
 	auditor: {
 		type: String,
 		required: true,
-	},
-	category: {
-		type: String,
 	},
 	jobs: [
 		{
