@@ -1,36 +1,68 @@
-import { Fragment } from 'react';
+import { Fragment, useState, useRef } from 'react';
 import { Link } from '@nextui-org/react';
+import { useRouter } from 'next/router';
+import { nanoid } from 'nanoid';
 
 import Job from '../../components/audits/jobs';
+import BodyForm from '../../components/checklist/BodyForm';
 
 // Same page for show and edit
-const Audit = ({ checklist }) => {
+const Edit = ({ checklist }) => {
+	const [jobs, setJobs] = useState(checklist.jobs);
+
+	const router = useRouter();
+
+	const nameJobRef = useRef();
+	const descriptionJobRef = useRef();
+
+	const handleAddJob = event => {
+		event.preventDefault();
+
+		const job = {
+			id: nanoid(),
+			name: nameJobRef.current.value,
+			description: descriptionJobRef.current.value,
+		};
+		setJobs([...jobs, job]);
+	};
+
+	const handleRemoveJob = jobId => {
+		const filteredJobs = jobs.filter(job => job._id !== jobId);
+		setJobs(filteredJobs);
+	};
+
+	const handleUpdate = async updatedChecklist => {
+		updatedChecklist = {
+			...updatedChecklist,
+			jobs: jobs,
+		};
+
+		const request = await fetch('http://localhost:3000/api/checklist/' + updatedChecklist._id, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(updatedChecklist),
+		});
+		if (request.ok) router.push('/checklist');
+	};
+
 	return (
 		<Fragment>
-			<Link href='/audit'>Volver</Link>
-			<form>
-				<label>Name</label>
-				<input required></input>
-				<label>Category</label>
-				<select>
-					<option value='O1'>O1</option>
-					<option value='O2'>O2</option>
-					<option value='O3'>O3</option>
-				</select>
-				<button type='submit'>Crear</button>
-			</form>
+			<Link href='/checklist'>Volver</Link>
+			<BodyForm checklist={checklist} onSubmit={handleUpdate}/>
 			<div>
-				Agregar tarea
-				<form>
+				Tareas
+				<form onSubmit={handleAddJob}>
 					<label>Nombre</label>
-					<input></input>
+					<input ref={nameJobRef}></input>
 					<label>Descripción</label>
-					<input></input>
+					<input ref={descriptionJobRef}></input>
 					<button type='submit'>Agregar</button>
 				</form>
 				Tareas
-				{checklist.jobs && checklist.jobs.map(job => (
-					<Job job={job} key={job.id} />
+				{jobs.map(job => (
+					<Job job={job} key={job.id} onRemove={handleRemoveJob} />
 				))}
 			</div>
 		</Fragment>
@@ -38,7 +70,6 @@ const Audit = ({ checklist }) => {
 };
 
 export async function getStaticProps({ params }) {
-	console.log(params);
 	const response = await fetch(
 		'http://localhost:3000/api/checklist/' + params.id
 	);
@@ -63,4 +94,4 @@ export async function getStaticPaths() {
 	return { paths, fallback: false };
 }
 
-export default Audit;
+export default Edit;

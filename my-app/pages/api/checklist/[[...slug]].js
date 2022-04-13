@@ -32,6 +32,9 @@ const handler = async (req, res) => {
 			const newCheckList = await CheckList.create({
 				name: req.body.name,
 				category: req.body.category,
+				periodicity: req.body.periodicity,
+				date: req.body.date,
+				status: req.body.status,
 				jobs: req.body.jobs,
 				create_at: Date.now(),
 				updated_at: Date.now(),
@@ -66,7 +69,7 @@ const handler = async (req, res) => {
 	// Delete a check list
 	else if (req.method === 'DELETE') {
 		try {
-			// If the url is shorter or larger than the expected, thown an error
+			// If the url is shorter or larger than the expected, throw an error
 			if (!req.query.length > 0 && req.query.length > 2)
 				throw new Error('An error in the url was found');
 			const id = req.query.slug[0];

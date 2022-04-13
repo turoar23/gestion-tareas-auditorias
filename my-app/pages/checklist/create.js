@@ -1,25 +1,24 @@
 import { useRef, Fragment, useState } from 'react';
-import { Link } from '@nextui-org/react';
+import { Link, Switch } from '@nextui-org/react';
 import { useRouter } from 'next/router';
 import { nanoid } from 'nanoid';
 
 import Job from '../../components/audits/jobs';
+import BodyForm from '../../components/checklist/BodyForm';
 
 const Create = props => {
 	const [jobs, setJobs] = useState([]);
-	const nameRef = useRef();
-	const categoryRef = useRef();
+
 	const nameJobRef = useRef();
 	const descriptionJobRef = useRef();
-	const router = useRouter();
 
-	// const edit = props.edit;
+	const router = useRouter();
 
 	const handleAddJob = event => {
 		event.preventDefault();
 
 		const job = {
-			id: nanoid(),
+			_id: nanoid(),
 			name: nameJobRef.current.value,
 			description: descriptionJobRef.current.value,
 		};
@@ -31,15 +30,14 @@ const Create = props => {
 		setJobs(filteredJobs);
 	};
 
-	const handleCreate = async event => {
-		event.preventDefault();
-
-		const newCheckList = {
-			name: nameRef.current.value,
-			category: categoryRef.current.value,
-			jobs: jobs,
+	const handleCreate = async newCheckList => {
+		newCheckList = {
+			...newCheckList,
+			jobs: jobs.map(job => ({
+				name: job.name,
+				description: job.description,
+			})),
 		};
-		console.log(newCheckList);
 
 		const request = await fetch('http://localhost:3000/api/checklist', {
 			method: 'POST',
@@ -53,18 +51,9 @@ const Create = props => {
 
 	return (
 		<Fragment>
-			<Link href='/audit'>Volver</Link>
-			<form onSubmit={handleCreate}>
-				<label>Name</label>
-				<input ref={nameRef} required></input>
-				<label>Category</label>
-				<select ref={categoryRef}>
-					<option value='O1'>O1</option>
-					<option value='O2'>O2</option>
-					<option value='O3'>O3</option>
-				</select>
-				<button type='submit'>Crear</button>
-			</form>
+			<Link href='/checklist'>Volver</Link>
+			<BodyForm onSubmit={handleCreate} />
+			{/* To add jobs */}
 			<div>
 				Agregar tarea
 				<form onSubmit={handleAddJob}>

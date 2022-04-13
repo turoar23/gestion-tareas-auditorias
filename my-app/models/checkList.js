@@ -9,6 +9,19 @@ const checkList = new Schema({
 	category: {
 		type: String,
 	},
+	periodicity: {
+		type: String,
+		required: false,
+	},
+	date: {
+		type: Date,
+		required: false,
+	},
+	status: {
+		type: Boolean,
+		required: true,
+		default: false
+	},
 	jobs: [
 		{
 			name: String,
@@ -27,4 +40,5 @@ const checkList = new Schema({
 
 // mongoose.models = {};
 
-module.exports = mongoose.models.CheckList || mongoose.model('CheckList', checkList);
+module.exports =
+	mongoose.models.CheckList || mongoose.model('CheckList', checkList);

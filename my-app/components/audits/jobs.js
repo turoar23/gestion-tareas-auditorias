@@ -6,7 +6,7 @@ const Job = props => {
 	const job = props.job;
 
 	const handleRemove = () => {
-		props.onRemove(job.id);
+		props.onRemove(job._id);
 	};
 
 	return (
