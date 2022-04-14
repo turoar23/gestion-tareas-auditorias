@@ -3,7 +3,7 @@ import { Link, Switch } from '@nextui-org/react';
 import { useRouter } from 'next/router';
 import { nanoid } from 'nanoid';
 
-import Job from '../../components/audits/jobs';
+import Job from '../../components/audits/Job';
 import BodyForm from '../../components/checklist/BodyForm';
 
 const Create = props => {

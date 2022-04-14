@@ -3,7 +3,7 @@ import { Link } from '@nextui-org/react';
 import { useRouter } from 'next/router';
 import { nanoid } from 'nanoid';
 
-import Job from '../../components/audits/jobs';
+import Job from '../../components/audits/Job';
 import BodyForm from '../../components/checklist/BodyForm';
 
 // Same page for show and edit
@@ -15,16 +15,6 @@ const Edit = ({ checklist }) => {
 	const nameJobRef = useRef();
 	const descriptionJobRef = useRef();
 
-	const handleAddJob = event => {
-		event.preventDefault();
-
-		const job = {
-			id: nanoid(),
-			name: nameJobRef.current.value,
-			description: descriptionJobRef.current.value,
-		};
-		setJobs([...jobs, job]);
-	};
 
 	const handleRemoveJob = jobId => {
 		const filteredJobs = jobs.filter(job => job._id !== jobId);
@@ -37,20 +27,23 @@ const Edit = ({ checklist }) => {
 			jobs: jobs,
 		};
 
-		const request = await fetch('http://localhost:3000/api/checklist/' + updatedChecklist._id, {
-			method: 'PUT',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(updatedChecklist),
-		});
+		const request = await fetch(
+			'http://localhost:3000/api/checklist/' + updatedChecklist._id,
+			{
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(updatedChecklist),
+			}
+		);
 		if (request.ok) router.push('/checklist');
 	};
 
 	return (
 		<Fragment>
 			<Link href='/checklist'>Volver</Link>
-			<BodyForm checklist={checklist} onSubmit={handleUpdate}/>
+			<BodyForm checklist={checklist} onSubmit={handleUpdate} />
 			<div>
 				Tareas
 				<form onSubmit={handleAddJob}>
@@ -62,7 +55,12 @@ const Edit = ({ checklist }) => {
 				</form>
 				Tareas
 				{jobs.map(job => (
-					<Job job={job} key={job.id} onRemove={handleRemoveJob} />
+					<Job
+						job={job}
+						key={job.id}
+						onRemove={handleRemoveJob}
+						isChecklist={false}
+					/>
 				))}
 			</div>
 		</Fragment>

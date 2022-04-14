@@ -7,7 +7,7 @@ import EyeIcon from '../../components/UI/EyeIcon';
 import IconButton from '../../components/UI/IconButton';
 import DeleteIcon from '../../components/UI/DeleteIcon';
 
-// TODO: Repasar el buton y el uso del tag a
+// TODO: Repasar el boton y el uso del tag a
 function Audits({ checklists }) {
 	const [checkLists, setCheckLists] = useState(checklists);
 	const router = useRouter();

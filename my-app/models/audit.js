@@ -15,6 +15,10 @@ const audit = new Schema({
 		{
 			name: String,
 			value: String,
+			complete: {
+				type: Boolean,
+				default: false
+			}
 		},
 	],
 	create_at: {
